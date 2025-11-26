@@ -1,5 +1,5 @@
 const swaggerJsdoc = require('swagger-jsdoc');
-const schemas = require('../docs/swagger.schemas');
+const schemas = require('./swagger.schemas');
 
 const options = {
   definition: {
