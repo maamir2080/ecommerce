@@ -7,7 +7,11 @@ class VoucherRepository extends BaseRepository {
   }
 
   async findByCode(code) {
-    return await this.findOne({ code });
+    if (!code || typeof code !== 'string') {
+      return null;
+    }
+    const trimmedCode = code.trim();
+    return await this.findOne({ code: trimmedCode });
   }
 
   async findActive() {

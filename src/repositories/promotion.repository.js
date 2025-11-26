@@ -7,7 +7,11 @@ class PromotionRepository extends BaseRepository {
   }
 
   async findByCode(code) {
-    const result = await this.model.findOne({ code })
+    if (!code || typeof code !== 'string') {
+      return null;
+    }
+    const trimmedCode = code.trim();
+    const result = await this.model.findOne({ code: trimmedCode })
       .populate('eligibleCategories', 'name')
       .populate('eligibleItems', 'name price');
     return result;

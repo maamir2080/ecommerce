@@ -33,7 +33,7 @@ class PromotionService {
       code,
       eligibleCategories: data.eligibleCategories?.map(id => new Types.ObjectId(id)) || [],
       eligibleItems: data.eligibleItems?.map(id => new Types.ObjectId(id)) || [],
-      usedCount: 0,
+      usedCount: data.usedCount !== undefined ? data.usedCount : 0,
       isActive: data.isActive !== undefined ? data.isActive : true
     };
 
@@ -97,7 +97,10 @@ class PromotionService {
       updateData.eligibleItems = data.eligibleItems.map(id => new Types.ObjectId(id));
     }
 
-    await this.repository.update(id, updateData);
+    const updated = await this.repository.update(id, updateData);
+    if (!updated) {
+      throw new AppError('Failed to update promotion', 500);
+    }
     return await this.repository.findByIdWithPopulate(id);
   }
 
@@ -128,12 +131,18 @@ class PromotionService {
       return { valid: false, error: 'Promotion usage limit exceeded' };
     }
 
-    const eligibleProductIds = promotion.eligibleItems.map((item) => 
-      (item._id || item).toString()
-    );
-    const eligibleCategoryIds = promotion.eligibleCategories.map((cat) => 
-      (cat._id || cat).toString()
-    );
+    const eligibleProductIds = (promotion.eligibleItems || []).map((item) => {
+      if (typeof item === 'object' && item._id) {
+        return item._id.toString();
+      }
+      return item.toString();
+    });
+    const eligibleCategoryIds = (promotion.eligibleCategories || []).map((cat) => {
+      if (typeof cat === 'object' && cat._id) {
+        return cat._id.toString();
+      }
+      return cat.toString();
+    });
     
     if (eligibleProductIds.length === 0 && eligibleCategoryIds.length === 0) {
       return { valid: true, promotion };

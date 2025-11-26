@@ -1,7 +1,7 @@
-const { VoucherService } = require('../src/services/voucher.service');
-const { VoucherRepository } = require('../src/repositories/voucher.repository');
-const { Voucher } = require('../src/models/Voucher');
-const { connectDatabase, disconnectDatabase } = require('../src/config/database');
+const { VoucherService } = require('../services/voucher.service');
+const { VoucherRepository } = require('../repositories/voucher.repository');
+const { Voucher } = require('../models/Voucher');
+const { connectDatabase, disconnectDatabase } = require('../config/database');
 
 describe('VoucherService', () => {
   beforeAll(async () => {

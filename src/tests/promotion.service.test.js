@@ -1,9 +1,9 @@
-const { PromotionService } = require('../src/services/promotion.service');
-const { PromotionRepository } = require('../src/repositories/promotion.repository');
-const { Promotion } = require('../src/models/Promotion');
-const { Product } = require('../src/models/Product');
-const { Category } = require('../src/models/Category');
-const { connectDatabase, disconnectDatabase } = require('../src/config/database');
+const { PromotionService } = require('../services/promotion.service');
+const { PromotionRepository } = require('../repositories/promotion.repository');
+const { Promotion } = require('../models/Promotion');
+const { Product } = require('../models/Product');
+const { Category } = require('../models/Category');
+const { connectDatabase, disconnectDatabase } = require('../config/database');
 const { Types } = require('mongoose');
 
 describe('PromotionService', () => {
@@ -19,12 +19,18 @@ describe('PromotionService', () => {
   });
 
   beforeEach(async () => {
+    // Delete in proper order to avoid foreign key issues
     await Promotion.deleteMany({});
     await Product.deleteMany({});
     await Category.deleteMany({});
+    
+    // Wait a moment to ensure deletion completes
+    await new Promise(resolve => setTimeout(resolve, 10));
 
+    // Use unique name to avoid duplicate key errors
+    const uniqueId = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
     testCategory = await Category.create({
-      name: 'Test Category',
+      name: `Test Category ${uniqueId}`,
       description: 'Test Description'
     });
 

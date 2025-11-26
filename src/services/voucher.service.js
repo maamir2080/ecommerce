@@ -30,7 +30,7 @@ class VoucherService {
       ...data,
       discountType: data.discountType?.toLowerCase(),
       code,
-      usedCount: 0,
+      usedCount: data.usedCount !== undefined ? data.usedCount : 0,
       isActive: data.isActive !== undefined ? data.isActive : true
     };
 
@@ -85,7 +85,11 @@ class VoucherService {
       updateData.code = updateData.code.trim();
     }
 
-    return await this.repository.update(id, updateData);
+    const updated = await this.repository.update(id, updateData);
+    if (!updated) {
+      throw new AppError('Failed to update voucher', 500);
+    }
+    return updated;
   }
 
   static async deleteVoucher(id) {
