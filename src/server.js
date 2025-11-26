@@ -48,10 +48,11 @@ if (process.env.VERCEL) {
       await connectDatabaseOnce();
       next();
     } catch (error) {
+      console.error('Database connection error:', error.message);
+      
       res.status(500).json({
         success: false,
-        message: 'Database connection failed',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        message: 'Database connection failed'
       });
     }
   });
